@@ -1,0 +1,8 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/SWISH-API-Object.t
+t/01new.t
+lib/SWISH/API/Object.pm
+META.yml                                 Module meta-data (added by MakeMaker)
