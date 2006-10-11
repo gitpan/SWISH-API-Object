@@ -4,3 +4,6 @@ Revision history for Perl extension SWISH::API::Object.
 	- original version; created by h2xs 1.23 with options
 		-XA -n SWISH::API::Object
 
+0.02
+    * subclass SWISH::API::Stat directly
+

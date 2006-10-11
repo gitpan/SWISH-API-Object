@@ -3,24 +3,25 @@ package SWISH::API::Object;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 our @ISA;
-use base qw( SWISH::API::More );
+use base qw( SWISH::API::Stat );
 
 sub init
 {
     my $self = shift;
 
-    $self->mk_accessors(qw( stat properties class stash ));
+    $self->mk_accessors(qw( properties class stash ));
 
-    if ($self->stat)
-    {
-        eval { require SWISH::API::Stat; };
-        unless ($@)
-        {
-            push(@ISA, 'SWISH::API::Stat');
-        }
-    }
+    # TODO better way than declaring this via copy/paste
+    $self->{wrappers} = {
+
+        'SWISH::API::Object' => sub {
+            my $sam = shift;
+            $sam->check_stat(@_);
+          }
+
+    };
 
     my $i = $self->indexes->[0];    # just use the first one for header vals
 

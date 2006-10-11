@@ -6,7 +6,7 @@ WriteMakefile(
     VERSION_FROM      => 'lib/SWISH/API/Object.pm', # finds $VERSION
     PREREQ_PM         => {
 
-               'SWISH::API::More' => '0.01',
+               'SWISH::API::Stat' => '0.02',
                'Data::Dump' => '1.06',
 
 

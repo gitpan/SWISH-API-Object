@@ -15,6 +15,7 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
   SWISH::API::More
+  SWISH::API::Stat
 
 COPYRIGHT AND LICENCE
 
