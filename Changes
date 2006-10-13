@@ -7,3 +7,6 @@ Revision history for Perl extension SWISH::API::Object.
 0.02
     * subclass SWISH::API::Stat directly
 
+0.03
+    * fix POD to reflect 0.02 changes (doh!)
+

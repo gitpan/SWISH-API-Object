@@ -3,7 +3,7 @@ package SWISH::API::Object;
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 our @ISA;
 use base qw( SWISH::API::Stat );
 
@@ -146,7 +146,6 @@ SWISH::API::Object - return SWISH::API results as objects
                         swishlastmodified => 'result_property_str',
                         myproperty        => 1,
                         },
-                    stat        => 1,
                     stash       => {
                                 dbh => DBI->connect($myinfo)
                                 }
@@ -214,10 +213,6 @@ called on each property value when it is set in the object.
 
 The default is to use all PropertyNames defined in the index, with the default
 format.
-
-=item stat
-
-Set to true to use SWISH::API::Stat instead of standard SWISH::API::More as your base class.
 
 =item stash
 
