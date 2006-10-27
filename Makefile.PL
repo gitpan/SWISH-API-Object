@@ -1,12 +1,10 @@
 use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
 WriteMakefile(
     NAME              => 'SWISH::API::Object',
     VERSION_FROM      => 'lib/SWISH/API/Object.pm', # finds $VERSION
     PREREQ_PM         => {
 
-               'SWISH::API::Stat' => '0.02',
+               'SWISH::API::Stat' => '0.03',
                'Data::Dump' => '1.06',
 
 

@@ -25,8 +25,7 @@ ok(
     my $swish =
       SWISH::API::Object->new(
                               indexes => [$index],
-                              class   => 'My::Class',
-                              stat    => 1
+                              class   => 'My::Class'
                              ),
     "new object"
   );

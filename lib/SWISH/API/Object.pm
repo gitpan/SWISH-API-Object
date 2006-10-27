@@ -2,29 +2,21 @@ package SWISH::API::Object;
 
 use strict;
 use warnings;
+use Carp;
 
-our $VERSION = '0.03';
-our @ISA;
+our $VERSION = '0.04';
 use base qw( SWISH::API::Stat );
 
 sub init
 {
     my $self = shift;
-
+    
+    $self->SUPER::init(@_); # Stat init()
+        
     $self->mk_accessors(qw( properties class stash ));
-
-    # TODO better way than declaring this via copy/paste
-    $self->{wrappers} = {
-
-        'SWISH::API::Object' => sub {
-            my $sam = shift;
-            $sam->check_stat(@_);
-          }
-
-    };
-
+    
     my $i = $self->indexes->[0];    # just use the first one for header vals
-
+    
     unless ($self->properties && ref($self->properties))
     {
         $self->properties({});
@@ -60,8 +52,6 @@ sub init
 
     $self->class->mk_accessors(keys %{$self->properties});
 
-    $self->SUPER::init(@_);
-
 }
 
 sub props
@@ -73,28 +63,26 @@ sub props
 
 1;
 
+
 package SWISH::API::Object::Results;
+use strict;
+use warnings;
+use base qw( SWISH::API::More::Results );
+use Carp;
 
-#use Carp;
-#use Data::Dump qw/dump/;
-
-sub next_result_after
+sub next_result
 {
-    my ($sao, $orig, $arg, $ret) = @_;
-
-    return undef unless defined $ret->[0];
-
-    return make_object($sao, $ret->[0]);
+    my $self = shift;
+    my $r = $self->SUPER::next_result(@_);
+    return undef unless defined $r->result;
+    return $self->make_object($r->result);
 }
-
-sub NextResult_after { next_result_after(@_) }
 
 sub make_object
 {
-    my ($sao, $result) = @_;
-
-    #$sao->logger(
-    #      "making object in class " . $sao->class . " out of " . dump($result));
+    my ($self, $result) = @_;
+    my $sao   = $self->base;
+    my $class = $sao->class;
 
     my %propvals;
 
@@ -102,12 +90,18 @@ sub make_object
     {
         my $m = $sao->properties->{$p};
 
-        if ($result->can($m))
+        if ($class->can($m))
         {
-            $propvals{$p} = $result->$m($p);
+            $propvals{$p} = $class->$m($p);
         }
         else
         {
+
+# TODO there must be a bug here somewhere.
+# first time this runs under persistent process, fine.
+# 2nd and subsequent, this step takes 2x as long
+# it's pretty consistent. I think it's eval that is slow
+# but why it would run 2x as fast the first time, I don't know.
 
             # silence any eval warnings due to string content
             no warnings 'all';
@@ -121,10 +115,7 @@ sub make_object
 
     }
 
-    #$sao->logger(
-    #           "blessing propvals into " . $sao->class . " " . dump \%propvals);
-
-    return $sao->class->new(\%propvals, $sao->stash);
+    return $class->new(\%propvals, $sao->stash);
 }
 
 1;
