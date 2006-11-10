@@ -12,4 +12,8 @@ Revision history for Perl extension SWISH::API::Object.
 
 0.04
     * rewrite to support SWISH::API::More 0.03
+
+0.05
+    * fix bug in Result (same bug that SWISH::API::More 0.04 fixed)
+
     

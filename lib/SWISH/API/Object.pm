@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 use base qw( SWISH::API::Stat );
 
 sub init
@@ -74,8 +74,8 @@ sub next_result
 {
     my $self = shift;
     my $r = $self->SUPER::next_result(@_);
-    return undef unless defined $r->result;
-    return $self->make_object($r->result);
+    return undef unless defined $r;
+    return $self->make_object($r);
 }
 
 sub make_object
