@@ -1,20 +1,26 @@
 use Test::More;
 
 use SWISH::API::Object;
-use Path::Class;
+use File::Spec;
 use Carp;
-use Data::Dump qw/dump/;
+use Data::Dump qw( dump );
 
-my $index = file('t', 'index.swish-e')->stringify;
-my $file  = file('t', 'test.html')->stringify;
-my $cmd = "swish-e -i $file -f $index";
-#diag($cmd);
+my $index = File::Spec->catfile('t', 'index.swish-e');
+my $files = join(' ',
+                 File::Spec->catfile('t', 'test.html'),
+                 File::Spec->catfile('t', 'json.html'),
+                 File::Spec->catfile('t', 'yaml.html'));
+my $config = File::Spec->catfile('t', 'conf');
+my $cmd    = "swish-e -i $files -f $index -c $config";
+
+diag($cmd);
 system($cmd);
 
 if (-s $index)
 {
+
     #diag("found $index");
-    plan tests => 10;
+    plan tests => 11;
 }
 else
 {
@@ -32,12 +38,13 @@ ok(
 
 #diag(dump($swish));
 
-ok(my $results = $swish->query('foo'), "query");
+ok(my $results = $swish->query('yaml'), "query");
 
 #diag(dump($results));
 
 while (my $object = $results->next_result)
 {
+
     #diag '-' x 60;
     #diag(dump $object);
     for my $prop ($swish->props)

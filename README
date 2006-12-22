@@ -16,6 +16,7 @@ This module requires these other modules and libraries:
 
   SWISH::API::More
   SWISH::API::Stat
+  YAML::Syck
 
 COPYRIGHT AND LICENCE
 

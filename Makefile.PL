@@ -5,7 +5,7 @@ WriteMakefile(
     PREREQ_PM         => {
 
                'SWISH::API::Stat' => '0.03',
-               'Data::Dump' => '1.06',
+               'YAML::Syck' => '0.72',
 
 
 }, # e.g., Module::Name => 1.1

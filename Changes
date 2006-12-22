@@ -16,4 +16,7 @@ Revision history for Perl extension SWISH::API::Object.
 0.05
     * fix bug in Result (same bug that SWISH::API::More 0.04 fixed)
 
-    
+0.06
+    * uses YAML::Syck and JSON::Syck instead of Perl eval to deserialize()
+      property values. This should help relieve the memory leak experienced
+      with eval "$prop".

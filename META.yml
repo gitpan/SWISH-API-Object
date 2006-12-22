@@ -1,12 +1,12 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         SWISH-API-Object
-version:      0.05
+version:      0.06
 version_from: lib/SWISH/API/Object.pm
 installdirs:  site
 requires:
-    Data::Dump:                    1.06
     SWISH::API::Stat:              0.03
+    YAML::Syck:                    0.72
 
 distribution_type: module
 generated_by: ExtUtils::MakeMaker version 6.17
