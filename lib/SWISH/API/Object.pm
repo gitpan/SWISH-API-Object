@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 use base qw( SWISH::API::Stat );
 
 sub init
@@ -124,31 +124,18 @@ sub deserialize
     my $self = shift;
     my $f    = shift;
     my $v    = shift;
-    if ($f eq 'yaml')
+
+    if ($f eq 'yaml' && $v =~ m/^---/o)    # would substr() be faster?
     {
-        if ($v =~ m/^---\ ([^!].*)/s)    # simple scalar
-        {
-            return $1;
-        }
-        else
-        {
-            return YAML::Syck::Load($v);
-        }
+        return YAML::Syck::Load($v);
     }
-    elsif ($f eq 'json')
+    elsif ($f eq 'json' && $v =~ m/^[\{\[\"]/o)
     {
-        if ($v =~ m/^[^\{\[]/)
-        {
-            return $v;
-        }
-        else
-        {
-            return JSON::Syck::Load($v);
-        }
+        return JSON::Syck::Load($v);
     }
     else
     {
-        croak "unknown serial format $f";
+        return $v;
     }
 }
 
