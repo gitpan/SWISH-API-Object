@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 use base qw( SWISH::API::Stat );
 
 sub init
@@ -127,11 +127,23 @@ sub deserialize
 
     if ($f eq 'yaml' && $v =~ m/^---/o)    # would substr() be faster?
     {
-        return YAML::Syck::Load($v);
+        my $s;
+        eval { $s = YAML::Syck::Load($v); };
+        if ($@)
+        {
+            croak "$@\ncan't deserialize\n$v";
+        }
+        return $s;
     }
     elsif ($f eq 'json' && $v =~ m/^[\{\[\"]/o)
     {
-        return JSON::Syck::Load($v);
+        my $s;
+        eval { $s = JSON::Syck::Load($v); };
+        if ($@)
+        {
+            croak "$@\ncan't deserialize\n$v";
+        }
+        return $s;
     }
     else
     {

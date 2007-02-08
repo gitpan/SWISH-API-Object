@@ -23,4 +23,8 @@ Revision history for Perl extension SWISH::API::Object.
 
 0.07
     * fix/simplify deserialize() logic wrt YAML and JSON
-    
+   
+0.08
+    * wrap internal deserializers in eval() and croak on fatal err with
+      more helpful err message
+ 
