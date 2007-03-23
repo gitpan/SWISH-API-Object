@@ -27,4 +27,8 @@ Revision history for Perl extension SWISH::API::Object.
 0.08
     * wrap internal deserializers in eval() and croak on fatal err with
       more helpful err message
+0.09
+    * clarify POD regarding serial_format option.
+    * added VERSION() method to satisfy some versions of MakeMaker
+
  

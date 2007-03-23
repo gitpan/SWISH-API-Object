@@ -4,8 +4,10 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 use base qw( SWISH::API::Stat );
+
+sub VERSION { $VERSION }    # some MakeMaker's require this
 
 sub init
 {
@@ -250,6 +252,9 @@ handle so your object could query a database directly based on some method you d
 What format should serialized Perl values be assumed to be? The default is C<yaml>.
 You might also specify C<json>. If you have serialized values in some other format,
 then you'll need to subclass SWISH::API::Object::Result and override deserialize().
+
+If your properties are simple strings, numbers or dates, and you haven't indexed
+them as serialized objects, then just set serial_format equal to C<1>.
 
 See L<SWISH::Prog::Object>.
 
