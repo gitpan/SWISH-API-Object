@@ -6,6 +6,7 @@ WriteMakefile(
 
                'SWISH::API::Stat' => '0.03',
                'YAML::Syck' => '0.72',
+               'Data::Dump' => 0,
 
 
 }, # e.g., Module::Name => 1.1

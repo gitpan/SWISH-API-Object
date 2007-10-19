@@ -1,9 +1,18 @@
-use Test::More;
+use Test::More tests => 12;
 
-use SWISH::API::Object;
 use File::Spec;
 use Carp;
 use Data::Dump qw( dump );
+
+SKIP: {
+
+   eval { require SWISH::API  };
+
+   skip "SWISH::API is not installed - can't do More with it...", 1 if $@;
+
+   skip "SWISH::API 0.04 or higher required", 1 unless ($SWISH::API::VERSION && $SWISH::API::VERSION >= 0.04);
+
+   require_ok('SWISH::API::Object');
 
 my $index = File::Spec->catfile('t', 'index.swish-e');
 my $files = join(' ',
@@ -16,15 +25,9 @@ my $cmd    = "swish-e -i $files -f $index -c $config";
 diag($cmd);
 system($cmd);
 
-if (-s $index)
+unless (-s $index)
 {
-
-    #diag("found $index");
-    plan tests => 11;
-}
-else
-{
-    plan skip_all => 'no index found';
+    skip 'no index found', 11;
 }
 
 ok(
@@ -51,4 +54,6 @@ while (my $object = $results->next_result)
     {
         ok(printf("%s = %s\n", $prop, $object->$prop), "property printed");
     }
+}
+
 }

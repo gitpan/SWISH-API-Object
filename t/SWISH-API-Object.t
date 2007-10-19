@@ -1,15 +1,14 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl SWISH-API-Object.t'
-
-#########################
-
-# change 'tests => 1' to 'tests => last_test_to_print';
-
 use Test::More tests => 1;
-BEGIN { use_ok('SWISH::API::Object') };
 
-#########################
+SKIP: {
 
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
+   eval { require SWISH::API  };
+
+   skip "SWISH::API is not installed - can't do More with it...", 1 if $@;
+
+   skip "SWISH::API 0.04 or higher required", 1 unless ($SWISH::API::VERSION && $SWISH::API::VERSION >= 0.04);
+
+   require_ok('SWISH::API::Object');
+
+}
 

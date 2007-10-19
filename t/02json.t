@@ -1,6 +1,16 @@
-use Test::More tests => 11;
+use Test::More tests => 12;
 
-use SWISH::API::Object;
+SKIP: {
+
+   eval { require SWISH::API  };
+
+   skip "SWISH::API is not installed - can't do More with it...", 1 if $@;
+
+   skip "SWISH::API 0.04 or higher required", 1 unless ($SWISH::API::VERSION && $SWISH::API::VERSION >= 0.04);
+
+   require_ok('SWISH::API::Object');
+
+
 use Carp;
 use Data::Dump qw( dump );
 
@@ -28,4 +38,6 @@ while (my $object = $results->next_result)
     {
         ok(printf("%s = %s\n", $prop, $object->$prop), "property printed");
     }
+}
+
 }

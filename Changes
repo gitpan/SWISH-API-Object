@@ -31,4 +31,6 @@ Revision history for Perl extension SWISH::API::Object.
     * clarify POD regarding serial_format option.
     * added VERSION() method to satisfy some versions of MakeMaker
 
+0.10
+    * change tests to skip if no SWISH::API found
  
