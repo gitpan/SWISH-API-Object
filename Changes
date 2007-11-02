@@ -33,4 +33,8 @@ Revision history for Perl extension SWISH::API::Object.
 
 0.10
     * change tests to skip if no SWISH::API found
+
+0.11
+    * fix test SKIP sections to skip the correct number of tests
+
  

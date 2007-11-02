@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 use base qw( SWISH::API::Stat );
 
 sub VERSION { $VERSION }    # some MakeMaker's require this
