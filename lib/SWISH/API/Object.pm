@@ -1,56 +1,50 @@
 package SWISH::API::Object;
-
 use strict;
 use warnings;
 use Carp;
-
-our $VERSION = '0.11';
 use base qw( SWISH::API::Stat );
+use SWISH::API::Object::Results;
 
-sub VERSION { $VERSION }    # some MakeMaker's require this
+our $VERSION = '0.12';
 
-sub init
-{
+sub VERSION {$VERSION}    # some MakeMaker's require this
+
+sub init {
     my $self = shift;
 
     $self->SUPER::init(@_);    # Stat init()
 
-    $self->mk_accessors(qw( properties class stash serial_format ));
+    $self->mk_accessors(
+        qw( properties class stash serial_format filter filter_cache ));
+
+    $self->filter_cache( {} );
 
     my $i = $self->indexes->[0];    # just use the first one for header vals
 
-    unless ($self->properties && ref($self->properties))
-    {
-        $self->properties({});
+    unless ( $self->properties && ref( $self->properties ) ) {
+        $self->properties( {} );
 
         my @p = $self->handle->property_list("$i");
-        for (@p)
-        {
-            $self->properties->{$_->name} = $_->id;
+        for (@p) {
+            $self->properties->{ $_->name } = $_->id;
         }
     }
 
-    my $d = $self->handle->header_value($i, 'Description') || '';
-    my ($class, $format) = split(m/\ +/, $d);
-    unless ($self->class)
-    {
-        if ($class && $class =~ m/class:(\S+)/)
-        {
+    my $d = $self->handle->header_value( $i, 'Description' ) || '';
+    my ( $class, $format ) = split( m/\ +/, $d );
+    unless ( $self->class ) {
+        if ( $class && $class =~ m/class:(\S+)/ ) {
             $self->class($1);
         }
-        else
-        {
+        else {
             $self->class('SWISH::API::Object::Result::Instance');
         }
     }
-    unless ($self->serial_format)
-    {
-        if ($format && $format =~ m/format:(\S+)/)
-        {
+    unless ( $self->serial_format ) {
+        if ( $format && $format =~ m/format:(\S+)/ ) {
             $self->serial_format($1);
         }
-        else
-        {
+        else {
             $self->serial_format('yaml');
         }
     }
@@ -58,99 +52,18 @@ sub init
     # this ISA trickery has 2 benefits:
     # (1) a default new() method
     # (2) easy accessor maker
-    unless ($self->class->can('mk_accessors'))
-    {
+    unless ( $self->class->can('new') ) {
         no strict 'refs';
-        push(@{$self->class . '::ISA'}, 'Class::Accessor::Fast');
+        push( @{ $self->class . '::ISA' }, 'Class::Accessor::Fast' );
+        $self->class->mk_accessors( keys %{ $self->properties } );
     }
-
-    $self->class->mk_accessors(keys %{$self->properties});
 
 }
 
-sub props
-{
+sub props {
     my $self = shift;
-    $self->{_props} ||= [sort keys %{$self->properties}];
-    return @{$self->{_props}};
-}
-
-1;
-
-package SWISH::API::Object::Results;
-use strict;
-use warnings;
-use base qw( SWISH::API::More::Results );
-use Carp;
-use YAML::Syck ();
-use JSON::Syck ();
-
-sub next_result
-{
-    my $self = shift;
-    my $r    = $self->SUPER::next_result(@_);
-    return undef unless defined $r;
-    return $self->make_object($r);
-}
-
-sub make_object
-{
-    my ($self, $result) = @_;
-    my $sao   = $self->base;
-    my $class = $sao->class;
-
-    my %propvals;
-
-    for my $p ($sao->props)
-    {
-        my $m = $sao->properties->{$p};
-
-        if ($class->can($m))
-        {
-            $propvals{$p} = $class->$m($p);
-        }
-        else
-        {
-            my $v = $result->property($p);
-            $propvals{$p} =
-              defined($v) ? $self->deserialize($sao->serial_format, $v) : '';
-        }
-
-    }
-
-    return $class->new(\%propvals, $sao->stash);
-}
-
-sub deserialize
-{
-    my $self = shift;
-    my $f    = shift;
-    my $v    = shift;
-
-    if ($f eq 'yaml' && $v =~ m/^---/o)    # would substr() be faster?
-    {
-        my $s;
-        eval { $s = YAML::Syck::Load($v); };
-        if ($@)
-        {
-            croak "$@\ncan't deserialize\n$v";
-        }
-        return $s;
-    }
-    elsif ($f eq 'json' && $v =~ m/^[\{\[\"]/o)
-    {
-        my $s;
-        eval { $s = JSON::Syck::Load($v); };
-        if ($@)
-        {
-            croak "$@\ncan't deserialize\n$v";
-        }
-        return $s;
-    }
-    else
-    {
-        return $v;
-    }
+    $self->{_props} ||= [ sort keys %{ $self->properties } ];
+    return wantarray ? @{ $self->{_props} } : $self->{_props};
 }
 
 1;
@@ -175,16 +88,16 @@ SWISH::API::Object - return SWISH::API results as objects
                     stash       => {
                                 dbh => DBI->connect($myinfo)
                                 },
-                    serial_format => 'yaml'
+                    serial_format => 'yaml',
+                    filter      => sub { my ($sao, $result) = @_; return 1 },
                     );
                     
   my $results = $swish->query('foo');
   
-  while(my $object = $results->next_result)
-  {
+  while(my $object = $results->next_result) {
+    
     # $object is a My::Class object
-    for my $prop ($swish->props)
-    {
+    for my $prop ($swish->props) {
         printf("%s = %s\n", $prop, $object->$prop);
     }
     
@@ -245,7 +158,8 @@ format.
 
 Pass along any data you want to the Result object. Examples might include passing a DBI
 handle so your object could query a database directly based on some method you define.
-
+The stash value should be a hash reference, whose keys/values will be merged and supercede
+the properties values passed to the B<class> new() method.
 
 =item serial_format
 
@@ -257,6 +171,20 @@ If your properties are simple strings, numbers or dates, and you haven't indexed
 them as serialized objects, then just set serial_format equal to C<1>.
 
 See L<SWISH::Prog::Object>.
+
+=item filter
+
+Pass in a CODE ref to filter results in the SWISH::API::Object::Results next_result()
+method. Your filter should expect two arguments: the SWISH::API::Object object
+and a SWISH::API::More::Result object.
+
+Your filter may use the filter_cache() method on the S::A::O object to stash
+data between next_result() calls. The default return value of filter_cache() 
+is an empty hash ref.
+
+If your filter returns true, the result will be object-ified and returned.
+If false, then next_result() will be called again internally and the next
+SWISH::API::Result object passed on to your filter.
 
 =back
 
@@ -282,12 +210,6 @@ The internal SWISH::API::Object::Result class is used to extend the SWISH::API
 next_result() method with a next_result_after() method. See SWISH::API::More for
 documentation about how the *_after() methods work.
 
-=head2 deserialize( I<format>, I<prop_val> )
-
-Called for each property value. The I<format> deserialize() expects is based
-on C<serial_format> in SWISH::API::Object->new().
-
-
 =head1 SEE ALSO
 
 L<SWISH::API>, L<SWISH::API::More>
@@ -301,7 +223,7 @@ of the development of this module.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006 by Peter Karman
+Copyright (C) 2008 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

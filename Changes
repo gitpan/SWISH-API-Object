@@ -37,4 +37,7 @@ Revision history for Perl extension SWISH::API::Object.
 0.11
     * fix test SKIP sections to skip the correct number of tests
 
+0.12
+    * refactor to actually support blessing into existing classes
+    * added next() alias method to Results class
  
