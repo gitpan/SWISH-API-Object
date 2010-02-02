@@ -1,16 +1,24 @@
 --- #YAML:1.0
-name:                SWISH-API-Object
-version:             0.12
-abstract:            return SWISH::API results as objects
-license:             ~
-author:              
+name:               SWISH-API-Object
+version:            0.13
+abstract:           return SWISH::API results as objects
+author:
     - Peter Karman <karman@cpan.org>
-generated_by:        ExtUtils::MakeMaker version 6.42
-distribution_type:   module
-requires:     
-    Data::Dump:                    0
-    SWISH::API::Stat:              0.03
-    YAML::Syck:                    0.72
+license:            unknown
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
+requires:
+    Data::Dump:        0
+    SWISH::API::Stat:  0.03
+    YAML::Syck:        0.72
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.54
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
-    version: 1.3
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4

@@ -5,7 +5,7 @@ use Carp;
 use base qw( SWISH::API::Stat );
 use SWISH::API::Object::Results;
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 sub VERSION {$VERSION}    # some MakeMaker's require this
 
@@ -45,7 +45,7 @@ sub init {
             $self->serial_format($1);
         }
         else {
-            $self->serial_format('yaml');
+            $self->serial_format('json');
         }
     }
 
@@ -94,7 +94,7 @@ SWISH::API::Object - return SWISH::API results as objects
                     
   my $results = $swish->query('foo');
   
-  while(my $object = $results->next_result) {
+  while ( my $object = $results->next ) {
     
     # $object is a My::Class object
     for my $prop ($swish->props) {
@@ -143,6 +143,9 @@ the index header will be searched according to the API specified in SWISH::Prog:
 and if no suitable class name is found, will default to 
 C<SWISH::API::Object::Result::Instance>, which is a subclass of L<Class::Accessor::Fast>
 (whose magic is inherited from L<SWISH::API::More>).
+
+The class should expect at least one property called C<swish_result>
+which contains the original SWISH::API::Result object.
 
 
 =item properties
@@ -206,9 +209,9 @@ Utitlity method. Returns sorted array of property names. Shortcut for:
 
 =head1 SWISH::API::Object::Result
 
-The internal SWISH::API::Object::Result class is used to extend the SWISH::API
-next_result() method with a next_result_after() method. See SWISH::API::More for
-documentation about how the *_after() methods work.
+The internal SWISH::API::Object::Results class is used to extend the SWISH::API
+next_result() method with a next_result_after() method. 
+See SWISH::API::More for documentation about how the *_after() methods work.
 
 =head1 SEE ALSO
 

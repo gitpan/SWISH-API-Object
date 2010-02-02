@@ -5,6 +5,7 @@ README
 t/SWISH-API-Object.t
 t/01new.t
 t/02json.t
+t/03stemming.t
 t/test.html
 t/json.html
 t/yaml.html
